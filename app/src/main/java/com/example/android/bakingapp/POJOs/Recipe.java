@@ -1,15 +1,17 @@
 package com.example.android.bakingapp.POJOs;
 
+import java.util.ArrayList;
+
 public class Recipe {
 
     private int id;
     private String name;
-    private String ingredients;
-    private String steps;
+    private ArrayList<Ingredient> ingredients;
+    private ArrayList<Step> steps;
     private int servings;
     private String image;
 
-    public Recipe(int id, String name, String ingredients, String steps, int servings, String image) {
+    public Recipe(int id, String name, ArrayList<Ingredient> ingredients, ArrayList<Step> steps, int servings, String image) {
         this.id = id;
         this.name = name;
         this.ingredients = ingredients;
@@ -34,19 +36,19 @@ public class Recipe {
         this.name = name;
     }
 
-    public String getIngredients() {
+    public ArrayList<Ingredient> getIngredients() {
         return ingredients;
     }
 
-    public void setIngredients(String ingredients) {
+    public void setIngredients(ArrayList<Ingredient> ingredients) {
         this.ingredients = ingredients;
     }
 
-    public String getSteps() {
+    public ArrayList<Step> getSteps() {
         return steps;
     }
 
-    public void setSteps(String steps) {
+    public void setSteps(ArrayList<Step> steps) {
         this.steps = steps;
     }
 
@@ -68,7 +70,27 @@ public class Recipe {
 
     //For debugging
     public String toString() {
-        return "{" + "id = " + id + ", " + "name = " + name + ", " + "ingredients = " + ingredients + ", " +
-                "steps = " + steps + ", " + "servings = " + servings + ", " + "image = " + image + " }";
+        return "{ id = " + id + ", name = " + name + ", ingredients = " + ingredientsToString() + ", steps = " +
+                stepsToString() + ", servings = " + servings + ", image = " + image + " }";
+    }
+
+    private String ingredientsToString() {
+        String result = "{ ";
+
+        for (Ingredient i: ingredients) {
+            result = result + "name = " + i.getName() + ", quantity = " + i.getQuantity() +
+                    ", unit = " + i.getUnit() + "\n";
+        }
+        return result + " }";
+    }
+
+    private String stepsToString() {
+        String result = "{ ";
+
+        for (Step s: steps) {
+            result = result + "id = " + s.getId() + ", shortDescr = " + s.getShortDescr() + ", fullDescr = " +
+                    s.getFullDescr() + ", videoUrl = " + s.getVideoUrl() + ", thumbnailUrl = " + s.getThumbnailUrl() + "\n";
+        }
+        return result + " }";
     }
 }
