@@ -2,6 +2,8 @@ package com.example.android.bakingapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 
@@ -22,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding mBinding;
     ArrayList<Recipe> recipes;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,9 +33,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        mBinding.testTextId.setText("Hahah i got data binding");
 
         fetchJsonData();
+
+    }
+
+    private void initRecyclerView() {
+        mLayoutManager = new LinearLayoutManager(this);
+        mBinding.recyclerViewId.setHasFixedSize(true);
+        mAdapter = new RecipeAdapter(this, recipes);
+
+        mBinding.recyclerViewId.setLayoutManager(mLayoutManager);
+        mBinding.recyclerViewId.setAdapter(mAdapter);
     }
 
     private void fetchJsonData() {
@@ -41,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 setRecipes(response);
+                initRecyclerView();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -54,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     private void setRecipes(String recipeJson) {
         recipes = JsonUtils.parseRecipeJson(recipeJson);
         for (Recipe r: recipes) {
-            System.out.println(r.toString());
+            mBinding.testTextId.setText(r.toString());
         }
     }
 }
