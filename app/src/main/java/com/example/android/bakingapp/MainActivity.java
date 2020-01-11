@@ -13,6 +13,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.android.bakingapp.Adapters.RecipeListAdapter;
 import com.example.android.bakingapp.POJOs.Recipe;
 import com.example.android.bakingapp.databinding.ActivityMainBinding;
 import com.example.android.bakingapp.utilities.JsonUtils;
@@ -35,16 +36,15 @@ public class MainActivity extends AppCompatActivity {
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         fetchJsonData();
-
     }
 
     private void initRecyclerView() {
         mLayoutManager = new LinearLayoutManager(this);
-        mBinding.recyclerViewId.setHasFixedSize(true);
-        mAdapter = new RecipeAdapter(this, recipes);
+        mBinding.recyclerViewRecipesId.setHasFixedSize(true);
+        mAdapter = new RecipeListAdapter(this, recipes);
 
-        mBinding.recyclerViewId.setLayoutManager(mLayoutManager);
-        mBinding.recyclerViewId.setAdapter(mAdapter);
+        mBinding.recyclerViewRecipesId.setLayoutManager(mLayoutManager);
+        mBinding.recyclerViewRecipesId.setAdapter(mAdapter);
     }
 
     private void fetchJsonData() {
@@ -67,8 +67,5 @@ public class MainActivity extends AppCompatActivity {
 
     private void setRecipes(String recipeJson) {
         recipes = JsonUtils.parseRecipeJson(recipeJson);
-        for (Recipe r: recipes) {
-            mBinding.testTextId.setText(r.toString());
-        }
     }
 }

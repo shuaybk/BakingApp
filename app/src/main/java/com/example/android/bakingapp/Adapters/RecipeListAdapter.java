@@ -1,29 +1,29 @@
-package com.example.android.bakingapp;
+package com.example.android.bakingapp.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android.bakingapp.POJOs.Recipe;
-import com.example.android.bakingapp.databinding.RecipeItemBinding;
+import com.example.android.bakingapp.R;
+import com.example.android.bakingapp.RecipeDetailActivity;
 
 import java.util.ArrayList;
 
-public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder> {
+public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.RecipeViewHolder> {
 
     private Context mContext;
     private ArrayList<Recipe> recipeList;
 
-    public RecipeAdapter(Context context, ArrayList<Recipe> recipeList) {
+    public RecipeListAdapter(Context context, ArrayList<Recipe> recipeList) {
         this.mContext = context;
         this.recipeList = recipeList;
     }
@@ -47,7 +47,9 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         holder.clItemParentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(mContext, "You clicked on " + recipe.getName() + " recipe", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(mContext, RecipeDetailActivity.class);
+                intent.putExtra(Intent.EXTRA_COMPONENT_NAME, recipe);
+                mContext.startActivity(intent);
             }
         });
     }

@@ -1,8 +1,9 @@
 package com.example.android.bakingapp.POJOs;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Recipe {
+public class Recipe implements Serializable {
 
     private int id;
     private String name;
