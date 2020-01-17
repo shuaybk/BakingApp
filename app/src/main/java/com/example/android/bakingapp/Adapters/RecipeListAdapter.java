@@ -28,16 +28,15 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Re
         this.recipeList = recipeList;
     }
 
-    @NonNull
     @Override
-    public RecipeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecipeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipe_item, parent, false);
         RecipeViewHolder viewHolder = new RecipeViewHolder(view);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecipeViewHolder holder, int position) {
+    public void onBindViewHolder(RecipeViewHolder holder, int position) {
         final Recipe recipe = recipeList.get(position);
 
         holder.ivRecipeImage.setImageResource(R.drawable.ic_android);
