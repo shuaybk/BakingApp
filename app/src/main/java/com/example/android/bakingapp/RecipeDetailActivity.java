@@ -4,14 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.example.android.bakingapp.Adapters.RecipeDetailsListAdapter;
 import com.example.android.bakingapp.POJOs.Recipe;
 import com.example.android.bakingapp.databinding.ActivityRecipeDetailBinding;
 
