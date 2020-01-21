@@ -20,6 +20,23 @@ public class DetailsListFragment extends Fragment {
 
     Recipe recipe;
     RecipeDetailsListAdapter mAdapter;
+    OnDetailClickListener mCallback;
+
+    public interface OnDetailClickListener {
+        void onDetailSelected(int position);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        try {
+            mCallback = (OnDetailClickListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement OnDetailClickListener!!!!!!!!!!!!!!!!!!!!!");
+        }
+
+    }
 
     public DetailsListFragment(Recipe recipe) {
         this.recipe = recipe;
@@ -42,7 +59,7 @@ public class DetailsListFragment extends Fragment {
         mRecyclerView.setHasFixedSize(true);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
-        mAdapter = new RecipeDetailsListAdapter(getContext(), recipe);
+        mAdapter = new RecipeDetailsListAdapter(getContext(), recipe, mCallback);
 
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);

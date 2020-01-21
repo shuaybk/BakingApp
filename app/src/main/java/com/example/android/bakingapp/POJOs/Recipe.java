@@ -75,7 +75,7 @@ public class Recipe implements Serializable {
                 stepsToString() + ", servings = " + servings + ", image = " + image + " }";
     }
 
-    private String ingredientsToString() {
+    public String ingredientsToString() {
         String result = "{ ";
 
         for (Ingredient i: ingredients) {
@@ -85,7 +85,7 @@ public class Recipe implements Serializable {
         return result + " }";
     }
 
-    private String stepsToString() {
+    public String stepsToString() {
         String result = "{ ";
 
         for (Step s: steps) {

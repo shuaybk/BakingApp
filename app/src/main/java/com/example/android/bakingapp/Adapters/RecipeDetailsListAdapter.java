@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.android.bakingapp.DetailsListFragment;
 import com.example.android.bakingapp.POJOs.Recipe;
 import com.example.android.bakingapp.POJOs.Step;
 import com.example.android.bakingapp.R;
@@ -21,10 +22,12 @@ public class RecipeDetailsListAdapter extends RecyclerView.Adapter<RecipeDetails
 
     private Context mContext;
     private Recipe recipe;
+    private DetailsListFragment.OnDetailClickListener mCallback;
 
-    public RecipeDetailsListAdapter(Context context, Recipe recipe) {
+    public RecipeDetailsListAdapter(Context context, Recipe recipe, DetailsListFragment.OnDetailClickListener mCallback) {
         this.mContext = context;
         this.recipe = recipe;
+        this.mCallback = mCallback;
     }
 
     @Override
@@ -35,7 +38,7 @@ public class RecipeDetailsListAdapter extends RecyclerView.Adapter<RecipeDetails
     }
 
     @Override
-    public void onBindViewHolder(DetailsViewHolder holder, int position) {
+    public void onBindViewHolder(DetailsViewHolder holder, final int position) {
         //If it's the first item, we put ingredients.  Else it's the steps
         if (position == 0) {
             holder.tvHeading.setText("Ingredientsssssss");
@@ -58,7 +61,7 @@ public class RecipeDetailsListAdapter extends RecyclerView.Adapter<RecipeDetails
             holder.liParentLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(mContext, "Clicked on a step", Toast.LENGTH_LONG).show();
+                    mCallback.onDetailSelected(position);
                 }
             });
         }
