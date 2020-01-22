@@ -17,26 +17,34 @@
                 android:id="@+id/recipeImage_id"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginEnd="5dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:padding="2dp" />
+                app:layout_constraintBottom_toBottomOf="parent" />
+
             <TextView
                 android:id="@+id/recipeName_id"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
                 android:text="Recipe Name Here"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/recipeImage_id"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.25" />
 
             <TextView
-                android:id="@+id/recipeDescr_id"
+                android:id="@+id/recipeServings_id"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
                 android:layout_gravity="center"
-                android:text="This is a short description of the recipe here"
-                app:layout_constraintStart_toEndOf="@id/recipeImage_id"
+                android:text="This is the number of servings"
+                app:layout_constraintStart_toStartOf="@+id/recipeName_id"
                 app:layout_constraintTop_toBottomOf="@id/recipeName_id" />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

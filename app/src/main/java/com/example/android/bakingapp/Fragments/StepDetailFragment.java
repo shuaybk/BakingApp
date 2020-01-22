@@ -58,9 +58,7 @@ public class StepDetailFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_step_details, container, false);
 
-        ((TextView)view.findViewById(R.id.tv_step_video_id)).setText(step.getVideoUrl());
         ((TextView)view.findViewById(R.id.tv_step_descr_id)).setText(step.getFullDescr());
-        ((TextView)view.findViewById(R.id.tv_step_thumbnail_id)).setText(step.getThumbnailUrl());
 
         backButton = (Button) view.findViewById(R.id.back_button_id);
 
