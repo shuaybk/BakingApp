@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 
 import com.example.android.bakingapp.Fragments.DetailsListFragment;
 import com.example.android.bakingapp.Fragments.IngredientsFragment;
@@ -23,8 +24,8 @@ public class RecipeDetailActivity extends AppCompatActivity implements
 
     ActivityRecipeDetailBinding mBinding;
     private Recipe recipe;
-    private boolean isTwoPane;
-    private int currentStep;  //This is to keep track of which step was last accessed (initially 0)
+    private boolean isTwoPane, isLandscape;
+    private int currentStep, currentFrag;  //This is to keep track of which step was last accessed (initially 0)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +55,8 @@ public class RecipeDetailActivity extends AppCompatActivity implements
             } else {
                 //Determine which type of fragment was last displayed (detail list or steps?)
                 //and display that one again
-                int whichFrag = savedInstanceState.getInt(BUNDLE_FRAGMENT_DISPLAYED_KEY);
-                if (whichFrag == 0) {
+                currentFrag = savedInstanceState.getInt(BUNDLE_FRAGMENT_DISPLAYED_KEY);
+                if (currentFrag == 0) {
                     singlePaneShowDetailsFragment();
                 } else {
                     singlePaneShowStepDetailFragment(currentStep);
@@ -66,8 +67,22 @@ public class RecipeDetailActivity extends AppCompatActivity implements
             if (isTwoPane) {
                 dualPaneSetFragments(0);
             } else {
+                currentFrag = 0;
                 singlePaneShowDetailsFragment();
             }
+        }
+
+        //Determine if landscape and if so, make it full screen on the Step Detail fragment
+        if (findViewById(R.id.landscape_layout_id) != null) {
+            isLandscape = true;
+            if (currentFrag == 1) {
+                getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                        WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+                getSupportActionBar().hide();
+            }
+        } else {
+            isLandscape = false;
         }
 
         if (!isTwoPane) {
@@ -77,6 +92,9 @@ public class RecipeDetailActivity extends AppCompatActivity implements
                     singlePaneShowDetailsFragment();
                 }
             });
+        }
+        if (isLandscape) {
+            mBinding.activityBackButtonId.setVisibility(View.GONE);
         }
     }
 
@@ -105,7 +123,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements
 
     //Helper method to set the single pane display (non-tablet) to the details list fragment
     public void singlePaneShowDetailsFragment() {
-
+        currentFrag = 0;
         mBinding.activityBackButtonId.setVisibility(View.GONE);
 
         FragmentManager fm = getSupportFragmentManager();
@@ -124,6 +142,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements
 
     //Helper method to set the single pane display (non-tablet) to the steps detail fragment
     public void singlePaneShowStepDetailFragment(int position) {
+        currentFrag = 1;
         currentStep = position;
 
         mBinding.activityBackButtonId.setVisibility(View.VISIBLE);

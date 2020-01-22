@@ -3,12 +3,14 @@ package com.example.android.bakingapp.Fragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.example.android.bakingapp.POJOs.Step;
@@ -31,6 +33,7 @@ public class StepDetailFragment extends Fragment {
 
     Step step;
     private SimpleExoPlayer exoPlayer;
+    Boolean isLandscape;
 
 
     public StepDetailFragment () {}
@@ -45,10 +48,31 @@ public class StepDetailFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_step_details, container, false);
 
+        if (view.findViewById(R.id.landscape_layout_id) != null) {
+            isLandscape = true;
+        } else {
+            isLandscape = false;
+        }
+
         if (savedInstanceState != null) {
             step = (Step)savedInstanceState.getSerializable(BUNDLE_STEP_KEY);
         }
-        ((TextView)view.findViewById(R.id.tv_step_descr_id)).setText(step.getFullDescr());
+
+        if (!isLandscape) {
+            ((TextView) view.findViewById(R.id.tv_step_descr_id)).setText(step.getFullDescr());
+        } else {
+            //Make the video fullscreen
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+            int height = displayMetrics.heightPixels;
+            int width = displayMetrics.widthPixels;
+
+            ConstraintLayout layout = view.findViewById(R.id.landscape_layout_id);
+            ViewGroup.LayoutParams params = layout.getLayoutParams();
+            params.height = height;
+            params.width = width;
+            layout.setLayoutParams(params);
+        }
 
         initVideoPlayer(view);
 
