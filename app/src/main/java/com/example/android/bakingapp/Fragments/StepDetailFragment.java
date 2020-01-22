@@ -27,26 +27,13 @@ import com.google.android.exoplayer2.util.Util;
 
 public class StepDetailFragment extends Fragment {
 
+    private final String BUNDLE_STEP_KEY = "STEP DETAIL STEP KEY";
+
     Step step;
-    Button backButton;
-    OnBackButtonClickListener mCallback;
     private SimpleExoPlayer exoPlayer;
 
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        try {
-            mCallback = (OnBackButtonClickListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnDetailClickListener!!!!!!!!!!!!!!!!!!!!!");
-        }
-    }
-
-    public interface OnBackButtonClickListener {
-        void onStepBackButtonSelected();
-    }
+    public StepDetailFragment () {}
 
     public StepDetailFragment(Step step) {
         this.step = step;
@@ -58,16 +45,10 @@ public class StepDetailFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_step_details, container, false);
 
+        if (savedInstanceState != null) {
+            step = (Step)savedInstanceState.getSerializable(BUNDLE_STEP_KEY);
+        }
         ((TextView)view.findViewById(R.id.tv_step_descr_id)).setText(step.getFullDescr());
-
-        backButton = (Button) view.findViewById(R.id.back_button_id);
-
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCallback.onStepBackButtonSelected();
-            }
-        });
 
         initVideoPlayer(view);
 
@@ -99,4 +80,12 @@ public class StepDetailFragment extends Fragment {
             exoPlayer.release();
         }
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(BUNDLE_STEP_KEY, step);
+        super.onSaveInstanceState(outState);
+
+    }
+
 }

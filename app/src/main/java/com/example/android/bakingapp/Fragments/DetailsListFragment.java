@@ -19,9 +19,34 @@ import com.example.android.bakingapp.R;
 
 public class DetailsListFragment extends Fragment {
 
+    private final String BUNDLE_RECIPE_KEY = "DETAILS LIST RECIPE KEY";
+
     Recipe recipe;
     RecipeDetailsListAdapter mAdapter;
     OnDetailClickListener mCallback;
+
+
+    public DetailsListFragment() {}
+
+    public DetailsListFragment(Recipe recipe) {
+        this.recipe = recipe;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        View view = inflater.inflate(R.layout.fragment_details_list, container, false);
+
+        if (savedInstanceState != null) {
+            recipe = (Recipe)savedInstanceState.getSerializable(BUNDLE_RECIPE_KEY);
+        }
+
+        initRecyclerView(view);
+
+        return view;
+
+    }
 
     public interface OnDetailClickListener {
         void onDetailSelected(int position);
@@ -39,21 +64,7 @@ public class DetailsListFragment extends Fragment {
 
     }
 
-    public DetailsListFragment(Recipe recipe) {
-        this.recipe = recipe;
-    }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-        View view = inflater.inflate(R.layout.fragment_details_list, container, false);
-
-        initRecyclerView(view);
-
-        return view;
-
-    }
 
     private void initRecyclerView(View view) {
         RecyclerView mRecyclerView = (RecyclerView)view.findViewById(R.id.recyclerViewRecipeDetails_id);
@@ -64,6 +75,13 @@ public class DetailsListFragment extends Fragment {
 
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(BUNDLE_RECIPE_KEY, recipe);
+        super.onSaveInstanceState(outState);
+
     }
 
 }

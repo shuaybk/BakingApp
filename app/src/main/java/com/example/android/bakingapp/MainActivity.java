@@ -1,5 +1,6 @@
 package com.example.android.bakingapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,10 +24,13 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final String BUNDLE_JSON_DATA_KEY = "JSON DATA KEY";
+
     ActivityMainBinding mBinding;
     ArrayList<Recipe> recipes;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private String jsonResponse;
 
 
     @Override
@@ -36,7 +40,15 @@ public class MainActivity extends AppCompatActivity {
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
-        fetchJsonData();
+        if (savedInstanceState != null) {
+            if ((jsonResponse = savedInstanceState.getString(BUNDLE_JSON_DATA_KEY)) != null) {
+                initAllData();
+            } else {
+                fetchJsonData();
+            }
+        } else {
+            fetchJsonData();
+        }
     }
 
     private void initRecyclerView() {
@@ -54,8 +66,8 @@ public class MainActivity extends AppCompatActivity {
         StringRequest mStringRequest = new StringRequest(Request.Method.GET, NetworkUtils.getDataUrl(), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                setRecipes(response);
-                initRecyclerView();
+                jsonResponse = response;
+                initAllData();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -68,5 +80,19 @@ public class MainActivity extends AppCompatActivity {
 
     private void setRecipes(String recipeJson) {
         recipes = JsonUtils.parseRecipeJson(recipeJson);
+    }
+
+
+    private void initAllData() {
+        setRecipes(jsonResponse);
+        initRecyclerView();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        if (jsonResponse != null) {
+            outState.putString(BUNDLE_JSON_DATA_KEY, jsonResponse);
+        }
+        super.onSaveInstanceState(outState);
     }
 }

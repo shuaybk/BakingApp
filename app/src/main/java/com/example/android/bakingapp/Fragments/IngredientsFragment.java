@@ -21,24 +21,13 @@ import com.example.android.bakingapp.R;
 import java.util.ArrayList;
 
 public class IngredientsFragment extends Fragment {
+
+    private final String BUNDLE_RECIPE_KEY = "INGREDIENTS RECIPE KEY";
+
     private Recipe recipe;
-    private OnBackButtonClickListener mCallback;
 
 
-    public interface OnBackButtonClickListener {
-        void onIngredientsBackButtonSelected();
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        try {
-            mCallback = (OnBackButtonClickListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnBackButtonClickListener!!!!!!!!!!!!!!!!!!!!!");
-        }
-    }
+    public IngredientsFragment() {}
 
     public IngredientsFragment(Recipe recipe) {
         this.recipe = recipe;
@@ -50,14 +39,11 @@ public class IngredientsFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_ingredients, container, false);
 
-        ((TextView)view.findViewById(R.id.ingredients_list_id)).setText(getFormattedIngredientsText());
+        if (savedInstanceState != null) {
+            recipe = (Recipe)savedInstanceState.getSerializable(BUNDLE_RECIPE_KEY);
+        }
 
-        ((Button)view.findViewById(R.id.back_button_id)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCallback.onIngredientsBackButtonSelected();
-            }
-        });
+        ((TextView)view.findViewById(R.id.ingredients_list_id)).setText(getFormattedIngredientsText());
 
         return view;
     }
@@ -115,4 +101,12 @@ public class IngredientsFragment extends Fragment {
 
         return result;
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(BUNDLE_RECIPE_KEY, recipe);
+        super.onSaveInstanceState(outState);
+
+    }
+
 }

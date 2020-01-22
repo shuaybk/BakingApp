@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentManager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import com.example.android.bakingapp.Fragments.DetailsListFragment;
 import com.example.android.bakingapp.Fragments.IngredientsFragment;
@@ -15,17 +16,21 @@ import com.example.android.bakingapp.POJOs.Recipe;
 import com.example.android.bakingapp.databinding.ActivityRecipeDetailBinding;
 
 public class RecipeDetailActivity extends AppCompatActivity implements
-        DetailsListFragment.OnDetailClickListener, StepDetailFragment.OnBackButtonClickListener,
-        IngredientsFragment.OnBackButtonClickListener {
+        DetailsListFragment.OnDetailClickListener {
+
+    private final String BUNDLE_CURRENT_STEP_KEY = "CURRENT STEP KEY";
+    private final String BUNDLE_FRAGMENT_DISPLAYED_KEY = "CURRENT FRAGMENT DISPLAYED KEY";
 
     ActivityRecipeDetailBinding mBinding;
     private Recipe recipe;
     private boolean isTwoPane;
+    private int currentStep;  //This is to keep track of which step was last accessed (initially 0)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail);
+
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_recipe_detail);
 
@@ -38,27 +43,47 @@ public class RecipeDetailActivity extends AppCompatActivity implements
             isTwoPane = false;
         }
 
-        FragmentManager fm = getSupportFragmentManager();
 
-        if (isTwoPane) {
-            Fragment fragment1 = new DetailsListFragment(recipe);
-            Fragment fragment2 = new StepDetailFragment(recipe.getSteps().get(0));
+        if (savedInstanceState != null) {
+            //Stores which step was last displayed
+            currentStep = savedInstanceState.getInt(BUNDLE_CURRENT_STEP_KEY);
 
-            fm.beginTransaction()
-                    .add(R.id.frag_recipe_details_list, fragment1)
-                    .add(R.id.frag_recipe_step, fragment2)
-                    .commit();
+            if (isTwoPane) {
+                //Display both fragments with the last displayed step displayed again
+                dualPaneSetFragments(currentStep);
+            } else {
+                //Determine which type of fragment was last displayed (detail list or steps?)
+                //and display that one again
+                int whichFrag = savedInstanceState.getInt(BUNDLE_FRAGMENT_DISPLAYED_KEY);
+                if (whichFrag == 0) {
+                    singlePaneShowDetailsFragment();
+                } else {
+                    singlePaneShowStepDetailFragment(currentStep);
+                }
+            }
         } else {
-            Fragment fragment = new DetailsListFragment(recipe);
-
-            fm.beginTransaction()
-                    .add(R.id.frag_recipe_details, fragment)
-                    .commit();
+            //Otherwise initialize from scratch
+            if (isTwoPane) {
+                dualPaneSetFragments(0);
+            } else {
+                singlePaneShowDetailsFragment();
+            }
         }
 
+        if (!isTwoPane) {
+            mBinding.activityBackButtonId.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    singlePaneShowDetailsFragment();
+                }
+            });
+        }
     }
 
+
     public void onDetailSelected(int position) {
+        currentStep = position;
+
         FragmentManager fm = getSupportFragmentManager();
         Fragment fragment = null;
 
@@ -73,43 +98,110 @@ public class RecipeDetailActivity extends AppCompatActivity implements
                     .replace(R.id.frag_recipe_step, fragment)
                     .commit();
         } else {
-            if (position == 0) {
-                fragment = new IngredientsFragment(recipe);
+            singlePaneShowStepDetailFragment(position);
+        }
+    }
+
+
+    //Helper method to set the single pane display (non-tablet) to the details list fragment
+    public void singlePaneShowDetailsFragment() {
+
+        mBinding.activityBackButtonId.setVisibility(View.GONE);
+
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment fragment = new DetailsListFragment(recipe);
+
+        if (fm.findFragmentById(R.id.frag_recipe_details) != null) {
+            fm.beginTransaction()
+                    .replace(R.id.frag_recipe_details, fragment)
+                    .commit();
+        } else {
+            fm.beginTransaction()
+                    .add(R.id.frag_recipe_details, fragment)
+                    .commit();
+        }
+    }
+
+    //Helper method to set the single pane display (non-tablet) to the steps detail fragment
+    public void singlePaneShowStepDetailFragment(int position) {
+        currentStep = position;
+
+        mBinding.activityBackButtonId.setVisibility(View.VISIBLE);
+
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment fragment = null;
+
+        if (position == 0) {
+            fragment = new IngredientsFragment(recipe);
+        } else {
+            fragment = new StepDetailFragment(recipe.getSteps().get(position - 1));
+        }
+
+        if (fm.findFragmentById(R.id.frag_recipe_details) != null) {
+            fm.beginTransaction()
+                    .replace(R.id.frag_recipe_details, fragment)
+                    .commit();
+        } else {
+            fm.beginTransaction()
+                    .add(R.id.frag_recipe_details, fragment)
+                    .commit();
+        }
+    }
+
+    //Helper method to set the dual pane display (tablet) to the specified step
+    public void dualPaneSetFragments(int position) {
+        FragmentManager fm = getSupportFragmentManager();
+
+        Fragment fragment1 = new DetailsListFragment(recipe);
+        Fragment fragment2 = null;
+        currentStep = position;
+
+        if (position == 0) {
+            fragment2 = new IngredientsFragment(recipe);
+        } else {
+            fragment2 = new StepDetailFragment(recipe.getSteps().get(position-1));
+        }
+
+
+        if (fm.findFragmentById(R.id.frag_recipe_details_list) != null) {
+            fm.beginTransaction()
+                    .replace(R.id.frag_recipe_details_list, fragment1)
+                    .commit();
+        } else {
+            fm.beginTransaction()
+                    .add(R.id.frag_recipe_details_list, fragment1)
+                    .commit();
+        }
+
+        if (fm.findFragmentById(R.id.frag_recipe_step) != null) {
+            fm.beginTransaction()
+                    .replace(R.id.frag_recipe_step, fragment2)
+                    .commit();
+        } else {
+            fm.beginTransaction()
+                    .add(R.id.frag_recipe_step, fragment2)
+                    .commit();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+
+        //Save data about which fragment is displayed on single pane (details or steps?)
+        if (!isTwoPane) {
+            FragmentManager fm = getSupportFragmentManager();
+            Fragment f = fm.findFragmentById(R.id.frag_recipe_details);
+
+            if (f instanceof IngredientsFragment || f instanceof StepDetailFragment) {
+                outState.putInt(BUNDLE_FRAGMENT_DISPLAYED_KEY, 1);
             } else {
-                fragment = new StepDetailFragment(recipe.getSteps().get(position - 1));
+                outState.putInt(BUNDLE_FRAGMENT_DISPLAYED_KEY, 0);
             }
-
-            fm.beginTransaction()
-                    .replace(R.id.frag_recipe_details, fragment)
-                    .commit();
         }
+
+        outState.putInt(BUNDLE_CURRENT_STEP_KEY, currentStep);
+        super.onSaveInstanceState(outState);
+
     }
-
-    public void onStepBackButtonSelected() {
-        FragmentManager fm = getSupportFragmentManager();
-
-        if (isTwoPane) {
-            //There is no back button to press
-        } else {
-            Fragment fragment = new DetailsListFragment(recipe);
-            fm.beginTransaction()
-                    .replace(R.id.frag_recipe_details, fragment)
-                    .commit();
-        }
-    }
-
-    public void onIngredientsBackButtonSelected() {
-        FragmentManager fm = getSupportFragmentManager();
-
-        if (isTwoPane) {
-            //There is no back button to press
-        } else {
-            Fragment fragment = new DetailsListFragment(recipe);
-            fm.beginTransaction()
-                    .replace(R.id.frag_recipe_details, fragment)
-                    .commit();
-        }
-    }
-
 
 }
