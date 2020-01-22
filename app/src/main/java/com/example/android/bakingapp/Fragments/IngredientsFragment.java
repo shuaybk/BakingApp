@@ -2,6 +2,8 @@ package com.example.android.bakingapp.Fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +14,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.android.bakingapp.POJOs.Ingredient;
 import com.example.android.bakingapp.POJOs.Recipe;
 import com.example.android.bakingapp.R;
+
+import java.util.ArrayList;
 
 public class IngredientsFragment extends Fragment {
     private Recipe recipe;
@@ -45,7 +50,7 @@ public class IngredientsFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_ingredients, container, false);
 
-        ((TextView)view.findViewById(R.id.ingredients_list_id)).setText(recipe.ingredientsToString());
+        ((TextView)view.findViewById(R.id.ingredients_list_id)).setText(getFormattedIngredientsText());
 
         ((Button)view.findViewById(R.id.back_button_id)).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,5 +60,59 @@ public class IngredientsFragment extends Fragment {
         });
 
         return view;
+    }
+
+    private String getFormattedIngredientsText() {
+        ArrayList<Ingredient> ingredients = recipe.getIngredients();
+        String result = "";
+
+        for (int i = 0; i < ingredients.size(); i++) {
+            Ingredient ingredient = ingredients.get(i);
+
+            //Get rid of trailing zeros on the quantity
+            String quantity = Double.toString(ingredient.getQuantity());
+            if ((ingredient.getQuantity() - ((int)ingredient.getQuantity())) == 0) {
+                quantity = quantity.substring(0,quantity.length()-2);
+            }
+            result += quantity;
+
+            String unit = getFormattedUnit(ingredient.getUnit());
+            result += unit;
+
+            result += " " + ingredient.getName();
+            result += "\n\n";
+        }
+
+        return result;
+    }
+
+    private String getFormattedUnit(String unit) {
+        String result = "";
+
+        switch (unit) {
+            case "UNIT":
+                //Leave blank
+                break;
+            case "CUP":
+                result = " cup";
+                break;
+            case "TBLSP":
+                result = " tbsp";
+                break;
+            case "TSP":
+                result = " tsp";
+                break;
+            case "K":
+                result = "kg";
+                break;
+            case "G":
+                result = "g";
+                break;
+            case "OZ":
+                result = "oz";
+                break;
+        }
+
+        return result;
     }
 }

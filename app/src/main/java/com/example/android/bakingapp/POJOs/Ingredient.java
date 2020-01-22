@@ -5,10 +5,10 @@ import java.io.Serializable;
 public class Ingredient implements Serializable {
 
     private String name;
-    private int quantity;
+    private double quantity;
     private String unit;
 
-    public Ingredient(String name, int quantity, String unit) {
+    public Ingredient(String name, double quantity, String unit) {
         this.name = name;
         this.quantity = quantity;
         this.unit = unit;
@@ -22,11 +22,11 @@ public class Ingredient implements Serializable {
         this.name = name;
     }
 
-    public int getQuantity() {
+    public double getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(double quantity) {
         this.quantity = quantity;
     }
 

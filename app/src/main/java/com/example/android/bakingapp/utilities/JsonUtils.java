@@ -65,7 +65,7 @@ public final class JsonUtils {
                 JSONObject currIngredient = ingredientListJson.getJSONObject(i);
 
                 String name = currIngredient.getString(INGREDIENT_NAME_KEY);
-                int quantity = currIngredient.getInt(INGREDIENT_QUANTITY_KEY);
+                double quantity = currIngredient.getDouble(INGREDIENT_QUANTITY_KEY);
                 String unit = currIngredient.getString(INGREDIENT_UNIT_KEY);
 
                 Ingredient ingredient = new Ingredient(name, quantity, unit);
