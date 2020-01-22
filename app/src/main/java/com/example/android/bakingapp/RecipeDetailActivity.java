@@ -7,8 +7,10 @@ import androidx.fragment.app.FragmentManager;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
 
+import com.example.android.bakingapp.Fragments.DetailsListFragment;
+import com.example.android.bakingapp.Fragments.IngredientsFragment;
+import com.example.android.bakingapp.Fragments.StepDetailFragment;
 import com.example.android.bakingapp.POJOs.Recipe;
 import com.example.android.bakingapp.databinding.ActivityRecipeDetailBinding;
 
@@ -58,15 +60,25 @@ public class RecipeDetailActivity extends AppCompatActivity implements
 
     public void onDetailSelected(int position) {
         FragmentManager fm = getSupportFragmentManager();
+        Fragment fragment = null;
 
         if (isTwoPane) {
-            System.out.println("POSITIOOOOOOOOOOOOOOOOOOOOOON IS " + position);
-            Fragment fragment = new StepDetailFragment(recipe.getSteps().get(position - 1));
+            if (position == 0) {
+                fragment = new IngredientsFragment(recipe);
+            } else {
+                fragment = new StepDetailFragment(recipe.getSteps().get(position - 1));
+            }
+
             fm.beginTransaction()
                     .replace(R.id.frag_recipe_step, fragment)
                     .commit();
         } else {
-            Fragment fragment = new StepDetailFragment(recipe.getSteps().get(position - 1));
+            if (position == 0) {
+                fragment = new IngredientsFragment(recipe);
+            } else {
+                fragment = new StepDetailFragment(recipe.getSteps().get(position - 1));
+            }
+
             fm.beginTransaction()
                     .replace(R.id.frag_recipe_details, fragment)
                     .commit();

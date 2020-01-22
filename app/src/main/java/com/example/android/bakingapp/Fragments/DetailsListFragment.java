@@ -1,4 +1,4 @@
-package com.example.android.bakingapp;
+package com.example.android.bakingapp.Fragments;
 
 import android.content.Context;
 import android.net.Uri;
@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 
 import com.example.android.bakingapp.Adapters.RecipeDetailsListAdapter;
 import com.example.android.bakingapp.POJOs.Recipe;
+import com.example.android.bakingapp.R;
 
 
 public class DetailsListFragment extends Fragment {

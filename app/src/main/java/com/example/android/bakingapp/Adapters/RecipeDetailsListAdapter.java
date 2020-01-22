@@ -6,13 +6,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.android.bakingapp.DetailsListFragment;
+import com.example.android.bakingapp.Fragments.DetailsListFragment;
 import com.example.android.bakingapp.POJOs.Recipe;
 import com.example.android.bakingapp.POJOs.Step;
 import com.example.android.bakingapp.R;
@@ -47,7 +45,7 @@ public class RecipeDetailsListAdapter extends RecyclerView.Adapter<RecipeDetails
             holder.liParentLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(mContext, "Clicked on ingredients", Toast.LENGTH_LONG).show();
+                    mCallback.onDetailSelected(position);
                 }
             });
         } else {

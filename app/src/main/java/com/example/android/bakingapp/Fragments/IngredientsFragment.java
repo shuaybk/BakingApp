@@ -1,4 +1,4 @@
-package com.example.android.bakingapp;
+package com.example.android.bakingapp.Fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.android.bakingapp.POJOs.Recipe;
+import com.example.android.bakingapp.R;
 
 public class IngredientsFragment extends Fragment {
     private Recipe recipe;
