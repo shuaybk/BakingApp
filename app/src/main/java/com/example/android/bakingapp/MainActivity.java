@@ -7,7 +7,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.PendingIntent;
+import android.appwidget.AppWidgetManager;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.RemoteViews;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -25,8 +30,12 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+    public final static String ACTION_OPEN_RECIPE = "KEY OPEN RECIPE";
+
     private final String BUNDLE_JSON_DATA_KEY = "JSON DATA KEY";
 
+
+    private int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     ActivityMainBinding mBinding;
     ArrayList<Recipe> recipes;
     private RecyclerView.Adapter mAdapter;
@@ -40,6 +49,25 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+
+
+        Intent launcherIntent = getIntent();
+
+        System.out.println("Maybe starting new activity??????");
+        if ((launcherIntent.getAction()).equals(ACTION_OPEN_RECIPE)) {
+            System.out.println("STARTING A NEW ACTIVITYYYYYYYYYYYYYYY, back button should work");
+            Intent intent = new Intent(this, RecipeDetailActivity.class);
+            intent.setAction("default action");
+            intent.putExtra(Intent.EXTRA_COMPONENT_NAME, (Recipe)launcherIntent.getSerializableExtra(Intent.EXTRA_COMPONENT_NAME));
+            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, launcherIntent.getIntExtra
+                    (AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID));
+            startActivity(intent);
+        }
+
+        Bundle extras = launcherIntent.getExtras();
+        if (extras != null) {
+            appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+        }
 
         if (savedInstanceState != null) {
             if ((jsonResponse = savedInstanceState.getString(BUNDLE_JSON_DATA_KEY)) != null) {
@@ -61,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
             mLayoutManager = new LinearLayoutManager(this);
         }
         mBinding.recyclerViewRecipesId.setHasFixedSize(true);
-        mAdapter = new RecipeListAdapter(this, recipes);
+        mAdapter = new RecipeListAdapter(this, recipes, appWidgetId);
 
         mBinding.recyclerViewRecipesId.setLayoutManager(mLayoutManager);
         mBinding.recyclerViewRecipesId.setAdapter(mAdapter);
@@ -94,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
         setRecipes(jsonResponse);
         initRecyclerView();
     }
+
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {

@@ -1,5 +1,6 @@
 package com.example.android.bakingapp.Adapters;
 
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.android.bakingapp.MainActivity;
 import com.example.android.bakingapp.POJOs.Recipe;
 import com.example.android.bakingapp.R;
 import com.example.android.bakingapp.RecipeDetailActivity;
@@ -20,12 +22,15 @@ import java.util.ArrayList;
 
 public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.RecipeViewHolder> {
 
+
+    private int appWidgetId;
     private Context mContext;
     private ArrayList<Recipe> recipeList;
 
-    public RecipeListAdapter(Context context, ArrayList<Recipe> recipeList) {
+    public RecipeListAdapter(Context context, ArrayList<Recipe> recipeList, int appWidgetId) {
         this.mContext = context;
         this.recipeList = recipeList;
+        this.appWidgetId = appWidgetId;
     }
 
     @Override
@@ -53,6 +58,7 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Re
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, RecipeDetailActivity.class);
                 intent.putExtra(Intent.EXTRA_COMPONENT_NAME, recipe);
+                intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
                 mContext.startActivity(intent);
             }
         });

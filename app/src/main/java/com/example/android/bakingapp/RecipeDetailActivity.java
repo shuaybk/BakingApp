@@ -5,10 +5,13 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.app.PendingIntent;
+import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.RemoteViews;
 
 import com.example.android.bakingapp.Fragments.DetailsListFragment;
 import com.example.android.bakingapp.Fragments.IngredientsFragment;
@@ -22,6 +25,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements
     private final String BUNDLE_CURRENT_STEP_KEY = "CURRENT STEP KEY";
     private final String BUNDLE_FRAGMENT_DISPLAYED_KEY = "CURRENT FRAGMENT DISPLAYED KEY";
 
+    private int appWidgetId;
     ActivityRecipeDetailBinding mBinding;
     private Recipe recipe;
     private boolean isTwoPane, isLandscape;
@@ -37,12 +41,15 @@ public class RecipeDetailActivity extends AppCompatActivity implements
 
         Intent parentIntent = getIntent();
         recipe = (Recipe)parentIntent.getSerializableExtra(Intent.EXTRA_COMPONENT_NAME);
+        appWidgetId = parentIntent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+        setWidgetText();
 
         if (findViewById(R.id.ll_parent_id) != null) {
             isTwoPane = true;
         } else {
             isTwoPane = false;
         }
+
 
 
         if (savedInstanceState != null) {
@@ -203,6 +210,11 @@ public class RecipeDetailActivity extends AppCompatActivity implements
                     .add(R.id.frag_recipe_step, fragment2)
                     .commit();
         }
+    }
+
+    public void setWidgetText() {
+        System.out.println("From details activity: THE WIDGET ID ISSSSSSSSSSS " + appWidgetId);
+        RecipeWidgetProvider.updateWidgetText(this, AppWidgetManager.getInstance(this), appWidgetId, recipe);
     }
 
     @Override
