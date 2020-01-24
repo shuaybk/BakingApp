@@ -3,6 +3,7 @@ package com.example.android.bakingapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -52,7 +53,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initRecyclerView() {
-        mLayoutManager = new LinearLayoutManager(this);
+        //If it's a tablet, display gridview.  Otherwise display list
+        boolean isTablet = getResources().getBoolean(R.bool.isTablet);
+        if (isTablet) {
+            mLayoutManager = new GridLayoutManager(this, 3);
+        } else {
+            mLayoutManager = new LinearLayoutManager(this);
+        }
         mBinding.recyclerViewRecipesId.setHasFixedSize(true);
         mAdapter = new RecipeListAdapter(this, recipes);
 

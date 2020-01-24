@@ -96,6 +96,8 @@ public class RecipeDetailActivity extends AppCompatActivity implements
         if (isLandscape) {
             mBinding.activityBackButtonId.setVisibility(View.GONE);
         }
+
+        getSupportActionBar().setTitle(recipe.getName());
     }
 
 
