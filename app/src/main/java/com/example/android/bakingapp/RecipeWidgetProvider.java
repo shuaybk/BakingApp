@@ -16,15 +16,18 @@ import java.util.Random;
  */
 public class RecipeWidgetProvider extends AppWidgetProvider {
 
+    public final static String ACTION_OPEN_RECIPE = "KEY OPEN RECIPE";
     Recipe recipe;
+
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.recipe_widget_provider);
 
         Intent intent = new Intent(context, MainActivity.class);
         intent.setAction("Default action");
+        System.out.println("from updateAppWidget: THE APP WIDGET ID ISSSSSSSSSSSSSSSSSSSSSSSS " + appWidgetId);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, appWidgetId, intent, 0);
 
         views.setOnClickPendingIntent(R.id.appwidget_text, pendingIntent);
 
@@ -34,7 +37,6 @@ public class RecipeWidgetProvider extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         for (int appWidgetId: appWidgetIds) {
-            System.out.println("from onUpdate: THE APP WIDGET ID ISSSSSSSSSSSSSSSSSSSSSSSS " + appWidgetId);
             updateAppWidget(context, appWidgetManager, appWidgetId);
         }
     }
@@ -44,11 +46,11 @@ public class RecipeWidgetProvider extends AppWidgetProvider {
         views.setTextViewText(R.id.appwidget_text, recipe.ingredientsToString());
 
         Intent intent = new Intent(context, MainActivity.class);
-        intent.setAction(MainActivity.ACTION_OPEN_RECIPE);
+        intent.setAction(ACTION_OPEN_RECIPE);
         intent.putExtra(Intent.EXTRA_COMPONENT_NAME, recipe);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         System.out.println("UPDATING THE WIDGET TEXT NOWWWW");
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, appWidgetId, intent, 0);
 
         views.setOnClickPendingIntent(R.id.appwidget_text, pendingIntent);
 

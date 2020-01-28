@@ -6,14 +6,13 @@
 
     <TextView
         android:id="@+id/appwidget_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:layout_margin="8dp"
         android:background="#09C"
-        android:contentDescription="@string/appwidget_text"
-        android:text="@string/appwidget_text"
+        android:text="Click to select recipe!"
         android:textColor="#ffffff"
         android:textSize="12sp"
         android:textStyle="bold|italic" />
