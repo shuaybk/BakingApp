@@ -213,7 +213,6 @@ public class RecipeDetailActivity extends AppCompatActivity implements
     }
 
     public void setWidgetText() {
-        System.out.println("From details activity: THE WIDGET ID ISSSSSSSSSSS " + appWidgetId);
         RecipeWidgetProvider.updateWidgetText(this, AppWidgetManager.getInstance(this), appWidgetId, recipe);
     }
 

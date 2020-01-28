@@ -43,63 +43,9 @@ public class IngredientsFragment extends Fragment {
             recipe = (Recipe)savedInstanceState.getSerializable(BUNDLE_RECIPE_KEY);
         }
 
-        ((TextView)view.findViewById(R.id.ingredients_list_id)).setText(getFormattedIngredientsText());
+        ((TextView)view.findViewById(R.id.ingredients_list_id)).setText(recipe.getFormattedIngredientsText());
 
         return view;
-    }
-
-    private String getFormattedIngredientsText() {
-        ArrayList<Ingredient> ingredients = recipe.getIngredients();
-        String result = "";
-
-        for (int i = 0; i < ingredients.size(); i++) {
-            Ingredient ingredient = ingredients.get(i);
-
-            //Get rid of trailing zeros on the quantity
-            String quantity = Double.toString(ingredient.getQuantity());
-            if ((ingredient.getQuantity() - ((int)ingredient.getQuantity())) == 0) {
-                quantity = quantity.substring(0,quantity.length()-2);
-            }
-            result += quantity;
-
-            String unit = getFormattedUnit(ingredient.getUnit());
-            result += unit;
-
-            result += " " + ingredient.getName();
-            result += "\n\n";
-        }
-
-        return result;
-    }
-
-    private String getFormattedUnit(String unit) {
-        String result = "";
-
-        switch (unit) {
-            case "UNIT":
-                //Leave blank
-                break;
-            case "CUP":
-                result = " cup";
-                break;
-            case "TBLSP":
-                result = " tbsp";
-                break;
-            case "TSP":
-                result = " tsp";
-                break;
-            case "K":
-                result = "kg";
-                break;
-            case "G":
-                result = "g";
-                break;
-            case "OZ":
-                result = "oz";
-                break;
-        }
-
-        return result;
     }
 
     @Override

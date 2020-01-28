@@ -94,4 +94,57 @@ public class Recipe implements Serializable {
         }
         return result + " }";
     }
+
+    public String getFormattedIngredientsText() {
+        String result = "";
+
+        for (int i = 0; i < ingredients.size(); i++) {
+            Ingredient ingredient = ingredients.get(i);
+
+            //Get rid of trailing zeros on the quantity
+            String quantity = Double.toString(ingredient.getQuantity());
+            if ((ingredient.getQuantity() - ((int)ingredient.getQuantity())) == 0) {
+                quantity = quantity.substring(0,quantity.length()-2);
+            }
+            result += quantity;
+
+            String unit = getFormattedUnit(ingredient.getUnit());
+            result += unit;
+
+            result += " " + ingredient.getName();
+            result += "\n\n";
+        }
+
+        return result;
+    }
+
+    private String getFormattedUnit(String unit) {
+        String result = "";
+
+        switch (unit) {
+            case "UNIT":
+                //Leave blank
+                break;
+            case "CUP":
+                result = " cup";
+                break;
+            case "TBLSP":
+                result = " tbsp";
+                break;
+            case "TSP":
+                result = " tsp";
+                break;
+            case "K":
+                result = "kg";
+                break;
+            case "G":
+                result = "g";
+                break;
+            case "OZ":
+                result = "oz";
+                break;
+        }
+
+        return result;
+    }
 }

@@ -51,9 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent launcherIntent = getIntent();
 
-        System.out.println("Maybe starting new activity??????");
         if ((launcherIntent.getAction()).equals(RecipeWidgetProvider.ACTION_OPEN_RECIPE)) {
-            System.out.println("STARTING A NEW ACTIVITYYYYYYYYYYYYYYY, back button should work");
             Intent intent = new Intent(this, RecipeDetailActivity.class);
             intent.setAction("default action");
             intent.putExtra(Intent.EXTRA_COMPONENT_NAME, (Recipe)launcherIntent.getSerializableExtra(Intent.EXTRA_COMPONENT_NAME));
@@ -65,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
         Bundle extras = launcherIntent.getExtras();
         if (extras != null) {
             appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
-            System.out.println("from MainActivity: THE APP WIDGET ID ISSSSSSSSSSSSSSSSSSSSSSSS " + appWidgetId);
         }
 
         if (savedInstanceState != null) {

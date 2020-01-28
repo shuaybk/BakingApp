@@ -25,7 +25,6 @@ public class RecipeWidgetProvider extends AppWidgetProvider {
 
         Intent intent = new Intent(context, MainActivity.class);
         intent.setAction("Default action");
-        System.out.println("from updateAppWidget: THE APP WIDGET ID ISSSSSSSSSSSSSSSSSSSSSSSS " + appWidgetId);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, appWidgetId, intent, 0);
 
@@ -43,13 +42,12 @@ public class RecipeWidgetProvider extends AppWidgetProvider {
 
     static void updateWidgetText(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Recipe recipe) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.recipe_widget_provider);
-        views.setTextViewText(R.id.appwidget_text, recipe.ingredientsToString());
+        views.setTextViewText(R.id.appwidget_text, recipe.getName() + " ingredients:\n\n" + recipe.getFormattedIngredientsText());
 
         Intent intent = new Intent(context, MainActivity.class);
         intent.setAction(ACTION_OPEN_RECIPE);
         intent.putExtra(Intent.EXTRA_COMPONENT_NAME, recipe);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        System.out.println("UPDATING THE WIDGET TEXT NOWWWW");
         PendingIntent pendingIntent = PendingIntent.getActivity(context, appWidgetId, intent, 0);
 
         views.setOnClickPendingIntent(R.id.appwidget_text, pendingIntent);
