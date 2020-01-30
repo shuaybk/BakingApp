@@ -58,24 +58,27 @@ public class RecipeDetailActivity extends AppCompatActivity implements
 
             if (isTwoPane) {
                 //Display both fragments with the last displayed step displayed again
-                dualPaneSetFragments(currentStep);
+                Fragment f1 = getSupportFragmentManager().getFragment(savedInstanceState, "fragment1");
+                Fragment f2 = getSupportFragmentManager().getFragment(savedInstanceState, "fragment2");
+                dualPaneSetFragments(currentStep, f1, f2);
             } else {
+                Fragment f1 = getSupportFragmentManager().getFragment(savedInstanceState, "fragment1");
                 //Determine which type of fragment was last displayed (detail list or steps?)
                 //and display that one again
                 currentFrag = savedInstanceState.getInt(BUNDLE_FRAGMENT_DISPLAYED_KEY);
                 if (currentFrag == 0) {
-                    singlePaneShowDetailsFragment();
+                    singlePaneShowDetailsFragment(f1);
                 } else {
-                    singlePaneShowStepDetailFragment(currentStep);
+                    singlePaneShowStepDetailFragment(currentStep, f1);
                 }
             }
         } else {
             //Otherwise initialize from scratch
             if (isTwoPane) {
-                dualPaneSetFragments(0);
+                dualPaneSetFragments(0, null, null);
             } else {
                 currentFrag = 0;
-                singlePaneShowDetailsFragment();
+                singlePaneShowDetailsFragment(null);
             }
         }
 
@@ -96,7 +99,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements
             mBinding.activityBackButtonId.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    singlePaneShowDetailsFragment();
+                    singlePaneShowDetailsFragment(null);
                 }
             });
         }
@@ -105,8 +108,14 @@ public class RecipeDetailActivity extends AppCompatActivity implements
         }
 
         getSupportActionBar().setTitle(recipe.getName());
+
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
 
     public void onDetailSelected(int position) {
         currentStep = position;
@@ -125,18 +134,23 @@ public class RecipeDetailActivity extends AppCompatActivity implements
                     .replace(R.id.frag_recipe_step, fragment)
                     .commit();
         } else {
-            singlePaneShowStepDetailFragment(position);
+            singlePaneShowStepDetailFragment(position, null);
         }
     }
 
 
     //Helper method to set the single pane display (non-tablet) to the details list fragment
-    public void singlePaneShowDetailsFragment() {
+    public void singlePaneShowDetailsFragment(Fragment fragment) {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         currentFrag = 0;
         mBinding.activityBackButtonId.setVisibility(View.GONE);
 
         FragmentManager fm = getSupportFragmentManager();
-        Fragment fragment = new DetailsListFragment(recipe);
+        //Fragment fragment = new DetailsListFragment(recipe);
+        if (fragment == null) {
+            fragment = new DetailsListFragment(recipe);
+        }
 
         if (fm.findFragmentById(R.id.frag_recipe_details) != null) {
             fm.beginTransaction()
@@ -150,19 +164,23 @@ public class RecipeDetailActivity extends AppCompatActivity implements
     }
 
     //Helper method to set the single pane display (non-tablet) to the steps detail fragment
-    public void singlePaneShowStepDetailFragment(int position) {
+    public void singlePaneShowStepDetailFragment(int position, Fragment fragment) {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
         currentFrag = 1;
         currentStep = position;
 
         mBinding.activityBackButtonId.setVisibility(View.VISIBLE);
 
-        FragmentManager fm = getSupportFragmentManager();
-        Fragment fragment = null;
 
-        if (position == 0) {
-            fragment = new IngredientsFragment(recipe);
-        } else {
-            fragment = new StepDetailFragment(recipe.getSteps().get(position - 1));
+        FragmentManager fm = getSupportFragmentManager();
+
+        if (fragment == null) {
+            if (position == 0) {
+                fragment = new IngredientsFragment(recipe);
+            } else {
+                fragment = new StepDetailFragment(recipe.getSteps().get(position - 1));
+            }
         }
 
         if (fm.findFragmentById(R.id.frag_recipe_details) != null) {
@@ -177,17 +195,22 @@ public class RecipeDetailActivity extends AppCompatActivity implements
     }
 
     //Helper method to set the dual pane display (tablet) to the specified step
-    public void dualPaneSetFragments(int position) {
+    public void dualPaneSetFragments(int position, Fragment fragment1, Fragment fragment2) {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         FragmentManager fm = getSupportFragmentManager();
 
-        Fragment fragment1 = new DetailsListFragment(recipe);
-        Fragment fragment2 = null;
+        if (fragment1 == null) {
+            fragment1 = new DetailsListFragment(recipe);
+        }
         currentStep = position;
 
-        if (position == 0) {
-            fragment2 = new IngredientsFragment(recipe);
-        } else {
-            fragment2 = new StepDetailFragment(recipe.getSteps().get(position-1));
+        if (fragment2 == null) {
+            if (position == 0) {
+                fragment2 = new IngredientsFragment(recipe);
+            } else {
+                fragment2 = new StepDetailFragment(recipe.getSteps().get(position - 1));
+            }
         }
 
 
@@ -218,22 +241,33 @@ public class RecipeDetailActivity extends AppCompatActivity implements
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-
         //Save data about which fragment is displayed on single pane (details or steps?)
+        FragmentManager fm = getSupportFragmentManager();
+
         if (!isTwoPane) {
-            FragmentManager fm = getSupportFragmentManager();
             Fragment f = fm.findFragmentById(R.id.frag_recipe_details);
+
+            fm.putFragment(outState, "fragment1", f);
 
             if (f instanceof IngredientsFragment || f instanceof StepDetailFragment) {
                 outState.putInt(BUNDLE_FRAGMENT_DISPLAYED_KEY, 1);
             } else {
                 outState.putInt(BUNDLE_FRAGMENT_DISPLAYED_KEY, 0);
             }
+        } else {
+            Fragment f1 = fm.findFragmentById(R.id.frag_recipe_details_list);
+            Fragment f2 = fm.findFragmentById(R.id.frag_recipe_step);
+
+            fm.putFragment(outState, "fragment1", f1);
+            fm.putFragment(outState, "fragment2", f2);
         }
+
 
         outState.putInt(BUNDLE_CURRENT_STEP_KEY, currentStep);
         super.onSaveInstanceState(outState);
 
     }
+
+
 
 }

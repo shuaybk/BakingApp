@@ -1,5 +1,6 @@
 package com.example.android.bakingapp.Fragments;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,13 +9,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.example.android.bakingapp.POJOs.Step;
 import com.example.android.bakingapp.R;
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
@@ -25,15 +29,22 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.squareup.picasso.Picasso;
 
 
 public class StepDetailFragment extends Fragment {
 
     private final String BUNDLE_STEP_KEY = "STEP DETAIL STEP KEY";
+    private final String PLAYER_POSITION_KEY = "VIDEO POSITION KEY";
 
     Step step;
     private SimpleExoPlayer exoPlayer;
+    private TrackSelector trackSelector;
+    private MediaSource videoSource;
+
+    private PlayerView playerView;
     Boolean isLandscape;
+    long video_position = C.TIME_UNSET;
 
 
     public StepDetailFragment () {}
@@ -48,6 +59,9 @@ public class StepDetailFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_step_details, container, false);
 
+        playerView = view.findViewById(R.id.exoplayer_id);
+
+
         if (view.findViewById(R.id.landscape_layout_id) != null) {
             isLandscape = true;
         } else {
@@ -56,6 +70,15 @@ public class StepDetailFragment extends Fragment {
 
         if (savedInstanceState != null) {
             step = (Step)savedInstanceState.getSerializable(BUNDLE_STEP_KEY);
+        }
+
+        if (view.findViewById(R.id.thumbnail_iv) != null) {
+            ImageView thumbnailIv = view.findViewById(R.id.thumbnail_iv);
+            if (!step.getThumbnailUrl().equals("")) {
+                Picasso.get().load(step.getThumbnailUrl()).into(thumbnailIv);
+            } else {
+                thumbnailIv.setVisibility(View.GONE);
+            }
         }
 
         if (!isLandscape) {
@@ -74,42 +97,79 @@ public class StepDetailFragment extends Fragment {
             layout.setLayoutParams(params);
         }
 
-        initVideoPlayer(view);
+        System.out.println("Initializing the player!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("The position is " + video_position);
+        initVideoPlayer();
 
         return view;
 
     }
 
     //Initialize the exoplayer if there is a video for this step, otherwise hide the video player
-    private void initVideoPlayer(View view) {
-        PlayerView simpleExoPlayerView = view.findViewById(R.id.exoplayer_id);
+    private void initVideoPlayer() {
 
         if (step.getVideoUrl().equals("")) {
-            simpleExoPlayerView.setVisibility(View.GONE);
+            playerView.setVisibility(View.GONE);
         } else {
-            TrackSelector trackSelector = new DefaultTrackSelector();
+            trackSelector = new DefaultTrackSelector();
             exoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
-            simpleExoPlayerView.setPlayer(exoPlayer);
+            playerView.setPlayer(exoPlayer);
             exoPlayer.setPlayWhenReady(true);
             DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(), Util.getUserAgent(getContext(), "VideoPlayer"));
-            MediaSource videoSource = new ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(step.getVideoUrl()));
+            videoSource = new ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(step.getVideoUrl()));
             exoPlayer.prepare(videoSource);
+            if (video_position != C.TIME_UNSET) {
+                System.out.println("Setting video position tooooooooooooooooooooooooo " + video_position);
+                exoPlayer.seekTo(video_position);
+            }
         }
     }
 
+
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onPause() {
+        super.onPause();
         if (exoPlayer != null) {
+            video_position = exoPlayer.getCurrentPosition();
+            exoPlayer.stop();
             exoPlayer.release();
         }
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putSerializable(BUNDLE_STEP_KEY, step);
-        super.onSaveInstanceState(outState);
-
+    public void onResume() {
+        super.onResume();
+        if (exoPlayer == null) {
+            initVideoPlayer();
+        }
     }
 
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        long position = C.TIME_UNSET;
+        if (exoPlayer != null) {
+            position = exoPlayer.getCurrentPosition();
+        }
+        System.out.println("SAVING VIDEO POSITIOOOOOOOOOOOOOOOOOOOOOOOOOOOON to " + position);
+
+        outState.putSerializable(BUNDLE_STEP_KEY, step);
+        outState.putLong(PLAYER_POSITION_KEY, position);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            video_position = savedInstanceState.getLong(PLAYER_POSITION_KEY);
+            System.out.println("Getting the video position, it issssssssssssssssssssss " + video_position);
+            if (exoPlayer != null) {
+                exoPlayer.release();
+            }
+            initVideoPlayer();
+        }
+    }
 }
