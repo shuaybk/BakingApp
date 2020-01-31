@@ -66,13 +66,26 @@ public class MainActivityBasicTest {
     }
 
     @Test
-    public void clickRecipeItem_OpensRecipeDetailActivity() {
+    public void clickRecipeItem_OpensRecipeDetailActivity_AndCountsSteps() {
         IdlingRegistry.getInstance().register(mActivityTestRule.getActivity().idlingResource);
 
         onView(withId(R.id.recyclerViewRecipes_id)).perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
 
         //Assertion that clicking on item at position 1 takes us to the Brownies recipe
         onView(allOf(instanceOf(TextView.class), withParent(withResourceName("action_bar")))).check(matches(withText(POSITION1_TITLE)));
+
+        //Assertion that there should be 11 list items in the Brownies recipe
+        onView(withId(R.id.recyclerViewRecipeDetails_id)).check(new ViewAssertion() {
+            @Override
+            public void check(View view, NoMatchingViewException noViewFoundException) {
+                if (noViewFoundException != null) {
+                    throw noViewFoundException;
+                }
+                RecyclerView recyclerView = (RecyclerView) view;
+                RecyclerView.Adapter adapter = recyclerView.getAdapter();
+                assertThat(adapter.getItemCount(), is(11));
+            }
+        });
     }
 
 }
