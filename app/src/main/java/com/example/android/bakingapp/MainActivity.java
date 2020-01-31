@@ -6,6 +6,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.idling.CountingIdlingResource;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -32,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     private final String BUNDLE_JSON_DATA_KEY = "JSON DATA KEY";
 
-
+    CountingIdlingResource idlingResource = new CountingIdlingResource("DATA_LOADER");
     private int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
     ActivityMainBinding mBinding;
     ArrayList<Recipe> recipes;
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
+        idlingResource.increment();
 
         Intent launcherIntent = getIntent();
 
@@ -89,6 +91,8 @@ public class MainActivity extends AppCompatActivity {
 
         mBinding.recyclerViewRecipesId.setLayoutManager(mLayoutManager);
         mBinding.recyclerViewRecipesId.setAdapter(mAdapter);
+        mBinding.testIdToDelete.setText("LOL delete this");
+        idlingResource.decrement();
     }
 
     private void fetchJsonData() {
