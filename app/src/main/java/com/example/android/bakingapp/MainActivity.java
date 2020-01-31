@@ -91,7 +91,6 @@ public class MainActivity extends AppCompatActivity {
 
         mBinding.recyclerViewRecipesId.setLayoutManager(mLayoutManager);
         mBinding.recyclerViewRecipesId.setAdapter(mAdapter);
-        mBinding.testIdToDelete.setText("LOL delete this");
         idlingResource.decrement();
     }
 
@@ -107,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                System.out.println("ERRRRRORRRR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                System.out.println("ERROR!!");
             }
         });
         mRequestQueue.add(mStringRequest);

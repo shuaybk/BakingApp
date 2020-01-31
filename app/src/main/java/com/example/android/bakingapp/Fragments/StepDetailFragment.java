@@ -20,6 +20,7 @@ import com.example.android.bakingapp.POJOs.Step;
 import com.example.android.bakingapp.R;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -36,6 +37,7 @@ public class StepDetailFragment extends Fragment {
 
     private final String BUNDLE_STEP_KEY = "STEP DETAIL STEP KEY";
     private final String PLAYER_POSITION_KEY = "VIDEO POSITION KEY";
+    private final String PLAYER_STATE_KEY = "VIDEO STATE KEY";
 
     Step step;
     private SimpleExoPlayer exoPlayer;
@@ -45,6 +47,7 @@ public class StepDetailFragment extends Fragment {
     private PlayerView playerView;
     Boolean isLandscape;
     long video_position = C.TIME_UNSET;
+    boolean video_playState = true;
 
 
     public StepDetailFragment () {}
@@ -72,17 +75,13 @@ public class StepDetailFragment extends Fragment {
             step = (Step)savedInstanceState.getSerializable(BUNDLE_STEP_KEY);
         }
 
-        if (view.findViewById(R.id.thumbnail_iv) != null) {
-            ImageView thumbnailIv = view.findViewById(R.id.thumbnail_iv);
-            if (!step.getThumbnailUrl().equals("")) {
-                Picasso.get().load(step.getThumbnailUrl()).into(thumbnailIv);
-            } else {
-                thumbnailIv.setVisibility(View.GONE);
-            }
-        }
+        ImageView thumbnailIv = view.findViewById(R.id.thumbnail_iv);
 
-        if (!isLandscape) {
-            ((TextView) view.findViewById(R.id.tv_step_descr_id)).setText(step.getFullDescr());
+        if (!isLandscape || step.getVideoUrl().equals("")) {
+            TextView textView = ((TextView) view.findViewById(R.id.tv_step_descr_id));
+            textView.setText(step.getFullDescr());
+            textView.setVisibility(View.VISIBLE);
+
         } else {
             //Make the video fullscreen
             DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -96,9 +95,11 @@ public class StepDetailFragment extends Fragment {
             params.width = width;
             layout.setLayoutParams(params);
         }
+        if (!step.getThumbnailUrl().equals("")) {
+            Picasso.get().load(step.getThumbnailUrl()).into(thumbnailIv);
+            thumbnailIv.setVisibility(View.VISIBLE);
+        }
 
-        System.out.println("Initializing the player!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.out.println("The position is " + video_position);
         initVideoPlayer();
 
         return view;
@@ -114,14 +115,14 @@ public class StepDetailFragment extends Fragment {
             trackSelector = new DefaultTrackSelector();
             exoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
             playerView.setPlayer(exoPlayer);
-            exoPlayer.setPlayWhenReady(true);
+            exoPlayer.setPlayWhenReady(video_playState);
             DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(), Util.getUserAgent(getContext(), "VideoPlayer"));
             videoSource = new ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(step.getVideoUrl()));
             exoPlayer.prepare(videoSource);
             if (video_position != C.TIME_UNSET) {
-                System.out.println("Setting video position tooooooooooooooooooooooooo " + video_position);
                 exoPlayer.seekTo(video_position);
             }
+
         }
     }
 
@@ -150,13 +151,15 @@ public class StepDetailFragment extends Fragment {
         super.onSaveInstanceState(outState);
 
         long position = C.TIME_UNSET;
+        boolean playState = true;
         if (exoPlayer != null) {
             position = exoPlayer.getCurrentPosition();
+            playState = exoPlayer.getPlayWhenReady();
         }
-        System.out.println("SAVING VIDEO POSITIOOOOOOOOOOOOOOOOOOOOOOOOOOOON to " + position);
 
         outState.putSerializable(BUNDLE_STEP_KEY, step);
         outState.putLong(PLAYER_POSITION_KEY, position);
+        outState.putBoolean(PLAYER_STATE_KEY, playState);
     }
 
     @Override
@@ -165,7 +168,7 @@ public class StepDetailFragment extends Fragment {
 
         if (savedInstanceState != null) {
             video_position = savedInstanceState.getLong(PLAYER_POSITION_KEY);
-            System.out.println("Getting the video position, it issssssssssssssssssssss " + video_position);
+            video_playState = savedInstanceState.getBoolean(PLAYER_STATE_KEY);
             if (exoPlayer != null) {
                 exoPlayer.release();
             }

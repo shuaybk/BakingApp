@@ -66,8 +66,6 @@ public class RecipeDetailsListAdapter extends RecyclerView.Adapter<RecipeDetails
 
             holder.tvHeading.setText("Step " + position);
             holder.tvDescr.setText(step.getShortDescr());
-            System.out.println(holder.tvHeading.getText().toString());
-            System.out.println(holder.tvDescr.getText().toString());
 
             holder.clParentLayout.setOnClickListener(new View.OnClickListener() {
                 @Override

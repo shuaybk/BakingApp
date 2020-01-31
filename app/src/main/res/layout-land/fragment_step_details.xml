@@ -17,5 +17,26 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageView
+            android:id="@+id/thumbnail_iv"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="10dp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/exoplayer_id" />
+
+        <TextView
+            android:id="@+id/tv_step_descr_id"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="10dp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/thumbnail_iv"
+            tools:text="The description here" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
